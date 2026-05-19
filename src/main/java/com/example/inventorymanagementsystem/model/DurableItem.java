@@ -21,4 +21,3 @@ public class DurableItem extends Item {
         return (getPrice() * getStockLevel()) * 1.05;
     }
 }
-
