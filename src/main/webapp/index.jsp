@@ -126,6 +126,19 @@
             color: #333;
         }
 
+        /* Custom arrow for select to match theme */
+        .form-select.custom-select-arrow {
+            /* inline SVG chevron-down, dark stroke */
+            background-image: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M6 9l6 6 6-6' stroke='%231a1a1a' stroke-width='2' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 1rem;
+            padding-right: 2.5rem;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+        }
+
         .form-control:focus, .form-select:focus {
             border-color: #000;
             box-shadow: 0 0 0 0.2rem rgba(0, 0, 0, 0.1);
@@ -270,13 +283,20 @@
                         <form id="addProductForm" action="product" method="POST" onsubmit="return validateAddForm(event)">
                             <input type="hidden" name="action" value="add">
                             <!-- validation feedback placeholder -->
-                            <div id="addFormAlert"></div>
+                            <div id="addFormAlert">
+                                <% if (request.getAttribute("addError") != null) { %>
+                                    <div class="alert alert-danger alert-dismissible" role="alert">
+                                        <%= request.getAttribute("addError") %>
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                    </div>
+                                <% } %>
+                            </div>
 
                             <div class="mb-3">
                                 <label class="form-label">
                                     <i class="bi bi-tag form-icon"></i> Product Name
                                 </label>
-                                <input type="text" name="name" class="form-control" placeholder="Enter product name" required>
+                                <input type="text" name="name" class="form-control" placeholder="Enter product name" required value="<%= request.getAttribute("formName") != null ? request.getAttribute("formName") : "" %>">
                             </div>
 
                             <div class="row">
@@ -284,13 +304,13 @@
                                     <label class="form-label">
                                         <i class="bi bi-currency-dollar form-icon"></i> Price
                                     </label>
-                                    <input type="number" step="0.01" name="price" class="form-control" placeholder="0.00" required>
+                                    <input type="number" step="0.01" name="price" class="form-control" placeholder="0.00" required value="<%= request.getAttribute("formPrice") != null ? request.getAttribute("formPrice") : "" %>">
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label">
                                         <i class="bi bi-box form-icon"></i> Initial Stock
                                     </label>
-                                    <input type="number" name="stock" class="form-control" placeholder="0" required>
+                                    <input type="number" name="stock" class="form-control" placeholder="0" required value="<%= request.getAttribute("formStock") != null ? request.getAttribute("formStock") : "" %>">
                                 </div>
                             </div>
 
@@ -298,9 +318,9 @@
                                 <label class="form-label">
                                     <i class="bi bi-diagram-3 form-icon"></i> Item Classification
                                 </label>
-                                <select name="itemType" id="itemType" class="form-select" onchange="toggleAttributeField()">
-                                    <option value="PERISHABLE">Perishable (Requires Expiry Date)</option>
-                                    <option value="DURABLE">Durable (Requires Warranty)</option>
+                                <select name="itemType" id="itemType" class="form-select custom-select-arrow" onchange="toggleAttributeField()">
+                                    <option value="PERISHABLE" <%= "PERISHABLE".equals(request.getAttribute("formType")) ? "selected" : "" %>>Perishable (Requires Expiry Date)</option>
+                                    <option value="DURABLE" <%= "DURABLE".equals(request.getAttribute("formType")) ? "selected" : "" %>>Durable (Requires Warranty)</option>
                                 </select>
                             </div>
 
@@ -308,7 +328,7 @@
                                 <label id="attrLabel" class="form-label">
                                     <i class="bi bi-calendar form-icon"></i> Expiry Date
                                 </label>
-                                <input type="text" name="specialAttribute" id="specialAttribute" class="form-control" placeholder="YYYY-MM-DD" required>
+                                <input type="text" name="specialAttribute" id="specialAttribute" class="form-control" placeholder="YYYY-MM-DD" required value="<%= request.getAttribute("formAttr") != null ? request.getAttribute("formAttr") : "" %>">
                             </div>
 
                             <button type="submit" class="btn btn-submit btn-add w-100">
@@ -331,20 +351,27 @@
                     <div class="card-body">
                         <form id="updateStockForm" action="product" method="POST" onsubmit="return validateUpdateForm(event)">
                             <input type="hidden" name="action" value="updateStock">
-                            <div id="updateFormAlert"></div>
+                            <div id="updateFormAlert">
+                                <% if (request.getAttribute("updateError") != null) { %>
+                                    <div class="alert alert-danger alert-dismissible" role="alert">
+                                        <%= request.getAttribute("updateError") %>
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                    </div>
+                                <% } %>
+                            </div>
 
                             <div class="mb-3">
                                 <label class="form-label">
                                     <i class="bi bi-key form-icon"></i> Product ID
                                 </label>
-                                <input type="number" name="id" class="form-control" placeholder="Enter product ID (e.g., 1)" required>
+                                <input type="number" name="id" class="form-control" placeholder="Enter product ID (e.g., 1)" required value="<%= request.getAttribute("updateId") != null ? request.getAttribute("updateId") : "" %>">
                             </div>
 
                             <div class="mb-3">
                                 <label class="form-label">
                                     <i class="bi bi-graph-up form-icon"></i> New Quantity
                                 </label>
-                                <input type="number" name="stockLevel" class="form-control" placeholder="Enter new stock level" required>
+                                <input type="number" name="stockLevel" class="form-control" placeholder="Enter new stock level" required value="<%= request.getAttribute("updateStock") != null ? request.getAttribute("updateStock") : "" %>">
                             </div>
 
                             <button type="submit" class="btn btn-submit btn-update w-100">
